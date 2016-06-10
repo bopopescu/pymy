@@ -5,6 +5,7 @@
 ####################################################
 import os
 import collections
+import ConfigParser
 
 def cluster_configuration_files(path):
     cluster_files = []
@@ -27,6 +28,27 @@ def print_cluster_menu(cluster_configuration_dictionary):
         cluster_name = os.path.splitext(os.path.basename(cluster_configuration_dictionary[key]))[0]
         print format_string.format(str(key), cluster_name)
 
+def cluster_summary(config_file):
+    """
+
+    :param config: A ConfigParser object
+    :return:
+    """
+    cluster_dict = { "master": 0,
+                     "master_slave": 0,
+                     "slave": 0,
+                     "backup": 0 }
+    config = ConfigParser.ConfigParser()
+    config.read(config_file)
+    for section in config.sections():
+        if section != "defaults":
+            role = config.get(section, "role")
+            if role not in cluster_dict.keys():
+                raise Exception("Unsupported role")
+            else:
+                cluster_dict[role] = cluster_dict[role] + 1
+    return cluster_dict
 
 if __name__ == "__main__":
     print_cluster_menu(cluster_configuration_dictionary(cluster_configuration_files('./config')))
+    print cluster_summary('./config/ClusterA.cfg')
