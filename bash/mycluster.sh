@@ -14,7 +14,7 @@ set -o pipefail;
 if [ $(uname) == "Darwin" ]; then
 	MYSQL_RELEASE="http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.13-osx10.11-x86_64.tar.gz"
 	MARIADB_RELEASE=MYSQL_RELEASE;
-	echo "Note: no currently available tar release for MariaDB. Using MySQL."
+	echo "Note: No currently available tar release for MariaDB on OS X. Using MySQL."
 elif [ $(uname) == "Linux" ]; then
 	MYSQL_RELEASE="http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.13-linux-glibc2.5-x86_64.tar"
 	MARIADB_RELEASE="https://downloads.mariadb.org/interstitial/mariadb-10.1.14/bintar-linux-x86_64/mariadb-10.1.14-linux-x86_64.tar.gz"
@@ -25,12 +25,35 @@ fi;
 
 SELECTED_RELEASE="$MYSQL_RELEASE";
 
+function myc_have_my
+{
+	if [ ! $(type my) ]; then
+		echo "my not in path. Get it from https://github.com/mathnode/mim";
+		exit 1;
+	fi;
+}
+
+function myc_is_my_setup_done
+{
+	S=-1
+	if [ -d "~/tmp_mycluster/mim-databases/configs" ] && [ -d "~/tmp_mycluster/mim-databases/templates" ] && [ -d "~/tmp_mycluster/mim-databases/data" ]; then
+		S=0;
+	else
+		S=1;
+	fi;
+}
+
 function myc_setup_env
 {
-	export MIMBINARIES=~/tmp_mycuster/mim-binaries;
+	myc_have_my;
+	export MIMBINARIES=~/tmp_mycluster/mim-binaries;
 	export MIMHOME=~/tmp_mycluster/mim-databases;
-	mkdir -p ~/tmp_mycuster/mim-binaries;
+	mkdir -p ~/tmp_mycluster/mim-binaries;
 	mkdir -p ~/tmp_mycluster/mim-databases;
+	if [ ! myc_is_my_setup_done ]; then
+		my setup;
+		cp ~/tmp_mycluster/mim-databases/templates/* ~/tmp_mycluster/mim-databases/configs
+	fi;
 }
 
 function myc_download_releases
@@ -93,20 +116,32 @@ function myc_start_cluster_servers
 
 function myc_execute_mysql_query
 {
-	
+	QUERY="$1";
 }
 
 function myc_mysql_secure_installation
 {
-	
+	if [ ! $(type mysql_secure_installation) ]; then
+		echo "mysql_secure_installation not implemented here yet!";
+	else
+		echo "mysql_secure_installation not available. Be sure to secure your MariaDB/MySQL instances.";
+	fi;
 }
 
 function myc_write_config
 {
-	
+	echo "No functionality implemented here yet!";
 }
 
-
+# Main function for setting up the cluster here
+function myc_setup_cluster
+{
+	myc_setup_env;
+	myc_download_releases;
+	myc_build_cluster_servers;
+	myc_install_cluster_servers;
+	myc_start_cluster_servers;
+}
 
 
 
