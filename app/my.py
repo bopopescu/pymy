@@ -22,17 +22,10 @@ def cluster_configuration_dictionary(cluster_configuration_files):
         index = index + 1
     return collections.OrderedDict(sorted(cluster_dictionary.items()))
 
-def print_cluster_menu(cluster_configuration_dictionary):
-    format_string = "{:<3} {:<10}"
-    for key in cluster_configuration_dictionary:
-        cluster_name = os.path.splitext(os.path.basename(cluster_configuration_dictionary[key]))[0]
-        print format_string.format(str(key), cluster_name)
-
 def cluster_summary(config_file):
     """
 
-    :param config: A ConfigParser object
-    :return:
+    :param config_file: A configuration file containing the cluster(s) definition
     """
     cluster_dict = { "master": 0,
                      "master_slave": 0,
@@ -48,6 +41,12 @@ def cluster_summary(config_file):
             else:
                 cluster_dict[role] = cluster_dict[role] + 1
     return cluster_dict
+
+def print_cluster_menu(cluster_configuration_dictionary):
+    format_string = "{:<3} {:<10}"
+    for key in cluster_configuration_dictionary:
+        cluster_name = os.path.splitext(os.path.basename(cluster_configuration_dictionary[key]))[0]
+        print format_string.format(str(key), cluster_name)
 
 if __name__ == "__main__":
     print_cluster_menu(cluster_configuration_dictionary(cluster_configuration_files('./config')))
