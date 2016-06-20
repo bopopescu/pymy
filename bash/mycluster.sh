@@ -5,6 +5,8 @@
 # Description: Creates and configures a MariaDB #
 # cluster. Uses the my tool from...             #
 # https://github.com/mathnode/mim               #
+# Developed on a Mac but aid to support Linux   #
+# Not yet fully functional.                     #
 #################################################
 
 set -e;
@@ -27,7 +29,7 @@ SELECTED_RELEASE="$MYSQL_RELEASE";
 
 function myc_have_my
 {
-	if [ ! $(type my) ]; then
+	if [ ! `which my` ]; then
 		echo "my not in path. Get it from https://github.com/mathnode/mim";
 		exit 1;
 	fi;
@@ -41,6 +43,16 @@ function myc_is_my_setup_done
 	else
 		S=1;
 	fi;
+	return ${S};
+}
+
+function myc_get_templates
+{
+	for url in https://raw.githubusercontent.com/mathnode/mim/master/templates/client-settings https://raw.githubusercontent.com/mathnode/mim/master/templates/common-settings https://raw.githubusercontent.com/mathnode/mim/master/templates/mariadb10 https://raw.githubusercontent.com/mathnode/mim/master/templates/olap https://raw.githubusercontent.com/mathnode/mim/master/templates/oltp-acid-transactional https://raw.githubusercontent.com/mathnode/mim/master/templates/utf8-settings
+	do
+		wget --directory-prefix="$MIMHOME/templates" "$url";
+	done;
+	
 }
 
 function myc_setup_env
@@ -51,8 +63,7 @@ function myc_setup_env
 	mkdir -p ~/tmp_mycluster/mim-binaries;
 	mkdir -p ~/tmp_mycluster/mim-databases;
 	if [ ! myc_is_my_setup_done ]; then
-		my setup;
-		cp ~/tmp_mycluster/mim-databases/templates/* ~/tmp_mycluster/mim-databases/configs
+		cp -n ~/tmp_mycluster/mim-databases/templates/* ~/tmp_mycluster/mim-databases/configs
 	fi;
 }
 
