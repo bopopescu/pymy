@@ -67,13 +67,37 @@ function myc_setup_env
 	fi;
 }
 
-function myc_download_releases
+# mysql_install_db changed from a script to a binary so the path changed
+# from scripts/mysql_install_db to bin/mysql_install_db untar and hotlink
+# the mysql_install_db binary if needed
+function myc_prepare_release
+{
+	RELEASE=$1;
+	FILENAME=$(basename "$RELEASE")
+	DIR_NAME="${FILENAME%.*}";
+	DIR_NAME="${DIR_NAME%.*}"; # because this is usually a .tar.gz
+	if [ ! -d "$MIMBINARIES/$DIR_NAME/scripts" ]; then
+			echo "$MIMBINARIES/$DIR_NAME/scripts does not exist. Creating...";
+			mkdir "$MIMBINARIES/$DIR_NAME/scripts";
+		if [ -e "$MIMBINARIES/$DIR_NAME/bin/mysql_install_db" ]; then
+			echo "Creating a symbolic link to $MIMBINARIES/$DIR_NAME/bin/mysql_install_db";
+			ln -s "$MIMBINARIES/$DIR_NAME/bin/mysql_install_db" "$MIMBINARIES/$DIR_NAME/scripts/mysql_install_db";
+		else
+			echo "No mysql_install_db to link to. Nothing done.";
+		fi
+	fi
+
+	
+}
+
+function myc_download_release
 {
 	if [ ! -f "$MIMBINARIES/$(basename $SELECTED_RELEASE)" ]; then
 		wget --directory-prefix="$MIMBINARIES" "$SELECTED_RELEASE";
 	else
 		echo "$(basename $SELECTED_RELEASE) found locally. Skipping download."
 	fi;
+	myc_prepare_release "$MIMBINARIES/$SELECTED_RELEASE";
 }
 
 function myc_build_server
@@ -100,9 +124,9 @@ function myc_build_cluster_servers
 	myc_build_server "master1" 30001 && echo "Built server master1";
 	myc_build_server "master2" 30002 && echo "Built server master2";
 	myc_build_server "slave1" 30003 && echo "Built server slave1";
-	myc_build_server "slave1" 30004 && echo "Built server slave2";
-	myc_build_server "slave1" 30005 && echo "Built server slave3";
-	myc_build_server "slave1" 30006  && echo "Built server slave4";
+	myc_build_server "slave2" 30004 && echo "Built server slave2";
+	myc_build_server "slave3" 30005 && echo "Built server slave3";
+	myc_build_server "slave4" 30006  && echo "Built server slave4";
 }
 
 function myc_install_cluster_servers
@@ -148,7 +172,7 @@ function myc_write_config
 function myc_setup_cluster
 {
 	myc_setup_env;
-	myc_download_releases;
+	myc_download_release;
 	myc_build_cluster_servers;
 	myc_install_cluster_servers;
 	myc_start_cluster_servers;
