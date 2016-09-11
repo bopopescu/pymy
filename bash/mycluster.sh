@@ -149,6 +149,38 @@ function myc_start_cluster_servers
 	myc_start_server "slave4" && echo "Started server slave4";
 }
 
+function myc_destroy_configs
+{
+	S=-1;
+	if [ -n "$MIMHOME" ]; then
+		rm -Rf ${MIMHOME}/configs/*.cnf;
+		S=0;
+	else
+		echo "MIMHOME is not set. Aborting...";
+		S=1;
+	fi;
+	return $S;
+}
+
+function myc_destroy_datadirs
+{
+	S=-1;
+	if [ -n "$MIMHOME" ]; then
+		rm -Rf ${MIMHOME}/data/*;
+		S=0;
+	else
+		echo "MIMHOME is not set. Aborting...";
+		S=1;
+	fi;
+	return $S;
+}
+
+function myc_destroy_cluster
+{
+	myc_destroy_configs;
+	myc_destroy_datadirs;
+}
+
 function myc_execute_mysql_query
 {
 	QUERY="$1";
