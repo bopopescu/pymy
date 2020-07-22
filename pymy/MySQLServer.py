@@ -48,7 +48,7 @@ class MySQLServer:
             result = cursor.fetchone()
             return result[1]
 
-    def show_slave_status(self, connection):
+    def show_subordinate_status(self, connection):
         """
         Execute the "SHOW SLAVE STATUS" command
         :param connection:
@@ -60,7 +60,7 @@ class MySQLServer:
             result = cursor.fetchall()
             return result
 
-    def show_master_status(self, connection):
+    def show_main_status(self, connection):
         """
         Execute the "SHOW MASTER STATUS" command
         :param connection:

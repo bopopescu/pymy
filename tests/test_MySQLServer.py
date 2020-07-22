@@ -25,14 +25,14 @@ class MyTest(unittest.TestCase):
         o = int(m.query_global_variables(m.connection, "INNODB_BUFFER_POOL_INSTANCES"))
         self.assertTrue(isinstance(o, int) and o > 0)
 
-    def test_show_slave_status(self):
+    def test_show_subordinate_status(self):
         m = MySQLServer(self.MYSQL_HOSTNAME, self.MYSQL_PORT, self.MYSQL_USER, self.MYSQL_PASSWORD)
-        o = m.show_slave_status(m.connection) # TODO Need a proper MySQL Cluster for this tests to be meaningful
+        o = m.show_subordinate_status(m.connection) # TODO Need a proper MySQL Cluster for this tests to be meaningful
         self.assertTrue(len(o) == 0)
 
-    def test_show_master_status(self):
+    def test_show_main_status(self):
         m = MySQLServer(self.MYSQL_HOSTNAME, self.MYSQL_PORT, self.MYSQL_USER, self.MYSQL_PASSWORD)
-        o =  m.show_master_status(m.connection)
+        o =  m.show_main_status(m.connection)
         self.assertTrue(isinstance(o['position'], int) and o['position'] > 0)
         self.assertEqual(o['file'][:9], "mysql-bin")
 

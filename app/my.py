@@ -27,9 +27,9 @@ def cluster_summary(config_file):
 
     :param config_file: A configuration file containing the cluster(s) definition
     """
-    cluster_dict = { "master": 0,
-                     "master_slave": 0,
-                     "slave": 0,
+    cluster_dict = { "main": 0,
+                     "main_subordinate": 0,
+                     "subordinate": 0,
                      "backup": 0 }
     config = ConfigParser.ConfigParser()
     config.read(config_file)
